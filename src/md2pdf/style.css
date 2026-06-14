@@ -1,0 +1,386 @@
+@charset "UTF-8";
+
+:root {
+  --ink: #172033;
+  --muted: #5c667a;
+  --line: #d9e0ea;
+  --accent: #185b9d;
+  --accent-deep: #123f6d;
+  --accent-soft: #e8f1fb;
+  --panel: #f6f9fc;
+  --panel-line: #d7e2ee;
+}
+
+@page {
+  size: A4;
+  margin: 18mm 17mm 20mm 17mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color: var(--ink);
+  font-family: "Hiragino Sans GB", "STHeiti", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", Arial, sans-serif;
+  font-size: 10.7pt;
+  line-height: 1.72;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+p {
+  margin: 0 0 0.72em 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+#title-block-header {
+  min-height: 190mm;
+  position: relative;
+  display: block;
+  padding: 24mm 18mm 18mm 23mm;
+  break-after: page;
+  overflow: hidden;
+  border: 0.9pt solid var(--panel-line);
+  border-left: 8mm solid var(--accent);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, #f8fbfe 0%, #ffffff 40%, #ffffff 100%);
+}
+
+#title-block-header::before {
+  content: "需求说明书";
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  width: max-content;
+  margin: 0 0 22mm 0;
+  padding: 2.3mm 4.4mm;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 9.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+#title-block-header::after {
+  content: "PRIVATE DEPLOYMENT · 4D IETM · OPERATION WORKFLOW";
+  position: absolute;
+  right: 18mm;
+  bottom: 18mm;
+  left: 23mm;
+  z-index: 0;
+  padding-top: 5mm;
+  border-top: 0.8pt solid var(--line);
+  color: #7a8798;
+  font-size: 8.4pt;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+
+h1.title {
+  margin: 0;
+  max-width: 165mm;
+  color: #10213d;
+  font-size: 28pt;
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+p.subtitle {
+  max-width: 160mm;
+  margin: 8mm 0 0 0;
+  color: var(--muted);
+  font-size: 13pt;
+  line-height: 1.56;
+}
+
+p.date {
+  margin: 16mm 0 0 0;
+  color: var(--muted);
+  font-size: 10.5pt;
+}
+
+#TOC {
+  break-after: page;
+  padding-top: 1mm;
+}
+
+#TOC::before {
+  content: "目录";
+  display: block;
+  margin: 0 0 8mm 0;
+  color: #10213d;
+  font-size: 21pt;
+  line-height: 1.2;
+  font-weight: 800;
+  border-bottom: 1.4pt solid var(--line);
+  padding-bottom: 4mm;
+}
+
+#TOC ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#TOC > ul > li {
+  margin: 0 0 3.2mm 0;
+  padding: 0 0 3.2mm 0;
+  border-bottom: 0.5pt solid #edf1f5;
+}
+
+#TOC > ul > li > a {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+#TOC ul ul {
+  margin-top: 1.4mm;
+  column-count: 2;
+  column-gap: 8mm;
+}
+
+#TOC ul ul li {
+  margin: 0 0 1.2mm 0;
+  break-inside: avoid;
+}
+
+#TOC ul ul a {
+  color: var(--muted);
+  font-size: 9.4pt;
+}
+
+h1,
+h2,
+h3 {
+  color: #10213d;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0 0 7mm 0;
+  padding-bottom: 3.2mm;
+  border-bottom: 1.4pt solid var(--line);
+  font-size: 20pt;
+  line-height: 1.28;
+  font-weight: 800;
+  break-before: page;
+  break-after: avoid;
+}
+
+#TOC + h1 {
+  break-before: auto;
+}
+
+h2 {
+  margin: 8.2mm 0 3.4mm 0;
+  font-size: 14.2pt;
+  line-height: 1.36;
+  font-weight: 780;
+  break-after: avoid;
+}
+
+h3 {
+  margin: 6mm 0 2.2mm 0;
+  color: var(--accent);
+  font-size: 11.8pt;
+  line-height: 1.36;
+  font-weight: 760;
+  break-after: avoid;
+}
+
+h4 {
+  margin: 4.5mm 0 1.8mm 0;
+  color: var(--muted);
+  font-size: 10.8pt;
+  font-weight: 740;
+  break-after: avoid;
+}
+
+#title-block-header h1.title {
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  max-width: 142mm;
+  padding: 0;
+  border: none;
+  color: #10213d;
+  font-size: 30pt;
+  line-height: 1.16;
+  font-weight: 800;
+  break-before: auto;
+  break-after: auto;
+}
+
+#title-block-header p.subtitle {
+  position: relative;
+  z-index: 1;
+  max-width: 132mm;
+  margin: 9mm 0 0 0;
+  padding: 4mm 5mm;
+  border: 0.7pt solid var(--panel-line);
+  border-left: 3pt solid var(--accent);
+  border-radius: 4px;
+  background: var(--panel);
+  color: #415066;
+  font-size: 12.4pt;
+  line-height: 1.58;
+}
+
+#title-block-header p.date {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3mm;
+  margin: 13mm 0 0 0;
+  padding: 2.4mm 4mm;
+  border: 0.7pt solid var(--line);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #536176;
+  font-size: 9.8pt;
+  font-weight: 650;
+}
+
+#title-block-header p.date::before {
+  content: "DATE";
+  color: var(--accent);
+  font-size: 7.8pt;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+ul,
+ol {
+  margin: 0 0 3.2mm 0;
+  padding-left: 7mm;
+}
+
+li {
+  margin: 0.7mm 0;
+  padding-left: 0.8mm;
+}
+
+li::marker {
+  color: var(--accent);
+}
+
+blockquote {
+  margin: 4.5mm 0 5mm 0;
+  padding: 3.4mm 4.2mm 3.2mm 4.8mm;
+  border-left: 4pt solid var(--accent);
+  background: var(--accent-soft);
+  color: #16304f;
+  break-inside: avoid;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+pre,
+code {
+  font-family: Menlo, Monaco, "Courier New", monospace;
+}
+
+code {
+  padding: 0.1em 0.28em;
+  border-radius: 3px;
+  background: #f3f5f8;
+  color: #1f2a44;
+  font-size: 0.93em;
+}
+
+pre {
+  margin: 4mm 0 5mm 0;
+  padding: 4mm 5mm;
+  border: 0.7pt solid var(--line);
+  border-radius: 4px;
+  background: #f7f9fb;
+  color: #213047;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  break-inside: avoid;
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 9.4pt;
+}
+
+table {
+  width: 100%;
+  margin: 5mm 0 6mm 0;
+  border-collapse: collapse;
+  border: 0.8pt solid var(--line);
+  font-size: 9.8pt;
+  break-inside: avoid;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+th,
+td {
+  padding: 2.7mm 3.2mm;
+  border: 0.55pt solid var(--line);
+  vertical-align: middle;
+  line-height: 1.56;
+}
+
+th {
+  background: #edf3f8;
+  color: #10213d;
+  font-weight: 760;
+}
+
+tbody tr:nth-child(even) td {
+  background: #fafbfd;
+}
+
+hr {
+  display: none;
+}
+
+figure {
+  margin: 0;
+}
+
+.footnotes,
+section.footnotes {
+  margin-top: 8mm;
+  padding-top: 4mm;
+  border-top: 1pt solid var(--line);
+  color: var(--muted);
+  font-size: 9pt;
+}
+
+@media print {
+  body {
+    orphans: 3;
+    widows: 3;
+  }
+}

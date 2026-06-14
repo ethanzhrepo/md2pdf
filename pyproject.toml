@@ -1,0 +1,50 @@
+# Packaging for the md2pdf CLI.
+#
+# Distribution (PyPI) name is "md2pdf-tool" (the plain "md2pdf" name is
+# already taken on PyPI). The *import* package stays `md2pdf`, so `import md2pdf`
+# and the `md2pdf` console command are unaffected by the distribution name.
+#
+# After publishing, fill url + sha256 in packaging/homebrew/md2pdf.rb.
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md2pdf-tool"
+version = "0.1.0"
+description = "Convert Markdown to a styled, Chinese-friendly A4 PDF with QA previews."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Ethan", email = "zhangyuxin85@gmail.com" }]
+keywords = ["markdown", "pdf", "pandoc", "playwright", "chinese", "cjk"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Printing",
+    "Environment :: Console",
+]
+dependencies = [
+    "playwright>=1.40",
+    "PyMuPDF>=1.24",
+    "Pillow>=10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ethanzhrepo/md2pdf"
+Repository = "https://github.com/ethanzhrepo/md2pdf"
+
+# Installs a global `md2pdf` command that calls build_pdf.main().
+[project.scripts]
+md2pdf = "md2pdf.build_pdf:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Ship the print stylesheet inside the package so the installed CLI can find it
+# at <site-packages>/md2pdf/style.css (build_pdf.py resolves it next to itself).
+[tool.setuptools.package-data]
+md2pdf = ["style.css"]

@@ -1,0 +1,116 @@
+name: release
+
+# Triggered by pushing a version tag, e.g.:
+#   git tag v0.1.1 && git push origin v0.1.1
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Build + publish to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # PyPI Trusted Publishing (OIDC) — no API token needed
+      contents: write   # create the GitHub Release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify tag matches pyproject version
+        run: |
+          set -euo pipefail
+          PYVER=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          TAG="${GITHUB_REF_NAME#v}"
+          echo "tag=$TAG pyproject=$PYVER"
+          if [ "$PYVER" != "$TAG" ]; then
+            echo "::error::tag v$TAG does not match pyproject version $PYVER"
+            exit 1
+          fi
+
+      - name: Build and check
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Publish to PyPI (Trusted Publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+
+  homebrew:
+    name: Bump Homebrew tap
+    needs: release
+    runs-on: ubuntu-latest
+    # Requires:
+    #   - a tap repo at <owner>/homebrew-md2pdf with Formula/md2pdf.rb
+    #   - secret HOMEBREW_TAP_TOKEN: a PAT with contents:write on that tap repo
+    env:
+      PYPI_NAME: md2pdf-tool
+      TAP_REPO: homebrew-md2pdf
+      FORMULA_PATH: Formula/md2pdf.rb
+    steps:
+      - name: Resolve sdist URL + sha256 from PyPI
+        id: sdist
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          # PyPI can take a little while to index a fresh release.
+          for i in $(seq 1 30); do
+            if curl -fsS "https://pypi.org/pypi/${PYPI_NAME}/${VERSION}/json" -o resp.json; then
+              break
+            fi
+            echo "waiting for PyPI to index ${VERSION} (attempt ${i})..."
+            sleep 10
+          done
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          d = json.load(open("resp.json"))
+          s = next(u for u in d["urls"] if u["packagetype"] == "sdist")
+          print(f"url={s['url']}")
+          print(f"sha256={s['digests']['sha256']}")
+          PY
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout tap
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/${{ env.TAP_REPO }}
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Update and push formula
+        env:
+          URL: ${{ steps.sdist.outputs.url }}
+          SHA: ${{ steps.sdist.outputs.sha256 }}
+          VERSION: ${{ steps.sdist.outputs.version }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, re
+          path = os.path.join("tap", os.environ["FORMULA_PATH"])
+          t = open(path).read()
+          t = re.sub(r'^(\s*)url ".*"', rf'\1url "{os.environ["URL"]}"', t, count=1, flags=re.M)
+          t = re.sub(r'^(\s*)sha256 ".*"', rf'\1sha256 "{os.environ["SHA"]}"', t, count=1, flags=re.M)
+          open(path, "w").write(t)
+          PY
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${FORMULA_PATH}"
+          if git diff --cached --quiet; then
+            echo "formula already up to date"
+            exit 0
+          fi
+          git commit -m "md2pdf ${VERSION}"
+          git push

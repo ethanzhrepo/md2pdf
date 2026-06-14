@@ -1,0 +1,30 @@
+# QA / intermediate build output from md2pdf
+.build/
+.md2pdf-build/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Packaging / distribution artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Local business documents — NOT part of the tool; keep out of the public repo
+/customer-system-overview.zh-CN.md
+/overview.zh-CN.md
+
+# Maintainer-only publishing guide — keep local, do not publish
+/PUBLISHING.md
+
+# Generated PDFs are temporary build artifacts — not committed.
+*.pdf
