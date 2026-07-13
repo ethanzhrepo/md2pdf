@@ -1,7 +1,15 @@
+import contextlib
+import io
 import unittest
 from pathlib import Path
 
-from md2pdf.build_pdf import build_metadata, default_output_path, selected_qa_pages
+from md2pdf.build_pdf import (
+    build_metadata,
+    default_output_path,
+    parse_args,
+    resolve_version,
+    selected_qa_pages,
+)
 
 
 class Md2PdfUtilityTests(unittest.TestCase):
@@ -27,6 +35,20 @@ class Md2PdfUtilityTests(unittest.TestCase):
         self.assertEqual(selected_qa_pages(1), [0])
         self.assertEqual(selected_qa_pages(2), [0, 1])
         self.assertEqual(selected_qa_pages(70), [0, 1, 2, 35, 69])
+
+    def test_resolve_version_is_never_empty(self):
+        self.assertTrue(resolve_version())
+
+    def test_version_flag_prints_and_exits_without_a_source(self):
+        # The version action must fire before argparse enforces the required
+        # `source` positional, so `md2pdf --version` works on its own.
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            with self.assertRaises(SystemExit) as exit_info:
+                parse_args(["--version"])
+
+        self.assertEqual(exit_info.exception.code, 0)
+        self.assertEqual(stdout.getvalue().strip(), f"md2pdf {resolve_version()}")
 
 
 if __name__ == "__main__":

@@ -8,11 +8,22 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import date as local_date
+from importlib import metadata
 from pathlib import Path
 
 
 TOOL_DIR = Path(__file__).resolve().parent
 DEFAULT_CSS = TOOL_DIR / "style.css"
+# PyPI distribution name; the import package is `md2pdf` (see pyproject.toml).
+DIST_NAME = "md2pdf-tool"
+
+
+def resolve_version() -> str:
+    try:
+        return metadata.version(DIST_NAME)
+    except metadata.PackageNotFoundError:
+        # Running from a source checkout (e.g. PYTHONPATH=src) with nothing installed.
+        return "unknown (source checkout)"
 
 
 @dataclass(frozen=True)
@@ -59,6 +70,12 @@ def selected_qa_pages(page_count: int) -> list[int]:
 def parse_args(argv: list[str] | None = None) -> BuildConfig:
     parser = argparse.ArgumentParser(
         description="Convert Markdown to a styled Chinese-friendly PDF and render QA previews.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"md2pdf {resolve_version()}",
+        help="Show the installed version and exit.",
     )
     parser.add_argument("source", type=Path, help="Markdown source file")
     parser.add_argument("--output", type=Path, help="PDF output path. Defaults to SOURCE with .pdf suffix.")
