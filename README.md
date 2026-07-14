@@ -47,6 +47,8 @@ md2pdf docs/requirements.md
 
 Without `--output`, the PDF is written next to the source with a `.pdf` suffix. Without `--title`, the filename stem is used.
 
+Local image paths are resolved relative to the Markdown source file and embedded in the generated HTML before printing. Large images are scaled down to fit the printable page area while retaining their aspect ratio; smaller images keep their natural size.
+
 There is also a `gen_pdf.sh` wrapper that reads the first level-1 Markdown heading as the cover title:
 
 ```bash

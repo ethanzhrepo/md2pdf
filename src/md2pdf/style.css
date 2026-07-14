@@ -353,8 +353,29 @@ hr {
   display: none;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 figure {
-  margin: 0;
+  margin: 4mm 0 5mm 0;
+  break-inside: avoid;
+}
+
+figure img {
+  display: block;
+  max-height: 220mm;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+figcaption {
+  margin-top: 1.5mm;
+  color: var(--muted);
+  font-size: 9pt;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .footnotes,

@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from md2pdf.build_pdf import (
+    DEFAULT_CSS,
     build_metadata,
     cover_label_style,
     css_string_literal,
@@ -95,6 +96,20 @@ class Md2PdfUtilityTests(unittest.TestCase):
 
         self.assertIn('src="data:image/svg+xml', generated_html)
         self.assertNotIn('src="assets/marker.svg"', generated_html)
+
+    def test_default_css_constrains_figures_to_printable_area(self):
+        css = DEFAULT_CSS.read_text(encoding="utf-8")
+
+        for required_rule in (
+            "max-width: 100%;",
+            "height: auto;",
+            "max-height: 220mm;",
+            "object-fit: contain;",
+            "break-inside: avoid;",
+            "figcaption {",
+        ):
+            with self.subTest(required_rule=required_rule):
+                self.assertIn(required_rule, css)
 
 
 if __name__ == "__main__":
