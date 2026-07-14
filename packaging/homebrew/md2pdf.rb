@@ -17,18 +17,25 @@ class Md2pdf < Formula
 
   desc "Convert Markdown to a styled, Chinese-friendly A4 PDF"
   homepage "https://github.com/ethanzhrepo/md2pdf"
-  url "https://files.pythonhosted.org/packages/source/m/md2pdf-tool/md2pdf_tool-0.1.0.tar.gz"
-  sha256 "FILL_IN_AFTER_PUBLISH"
+  url "https://files.pythonhosted.org/packages/41/30/7d740821f65d40193a92242c0024172c73c14c60b65d29f634b791d1429d/md2pdf_tool-0.1.2.tar.gz"
+  sha256 "2307906974073195876e79f3207ef237c4bc015115c97858ae7de9a600f51847"
   license "MIT"
 
   depends_on "pandoc"
   depends_on "python@3.12"
 
   def install
+    # virtualenv_create builds the venv *without* pip, and `without_pip: false`
+    # is rejected on Python 3.12+ — so there is no libexec/bin/pip to call.
+    # Drive the install with Homebrew python's own pip instead, targeting the
+    # venv via --python (the same trick Homebrew's own pip_install uses).
+    #
+    # We deliberately do not use the venv.pip_install DSL: its std_pip_args
+    # force --no-deps --no-binary=:all:, which would compile MuPDF from source.
+    # Here pip resolves the deps from PyPI as prebuilt wheels instead.
     virtualenv_create(libexec, "python3.12")
-    # Install the verified sdist (buildpath) and resolve its deps from PyPI as
-    # binary wheels.
-    system libexec/"bin/pip", "install", "--prefer-binary", buildpath
+    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip",
+           "--python=#{libexec}/bin/python", "install", "--prefer-binary", buildpath
     bin.install_symlink libexec/"bin/md2pdf"
   end
 
