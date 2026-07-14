@@ -1,5 +1,7 @@
 import contextlib
 import io
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -10,8 +12,12 @@ from md2pdf.build_pdf import (
     default_output_path,
     parse_args,
     resolve_version,
+    run_pandoc,
     selected_qa_pages,
 )
+
+
+FIXTURE_DIR = Path(__file__).parent / "fixtures" / "relative_image"
 
 
 class Md2PdfUtilityTests(unittest.TestCase):
@@ -67,6 +73,28 @@ class Md2PdfUtilityTests(unittest.TestCase):
 
         self.assertEqual(exit_info.exception.code, 0)
         self.assertEqual(stdout.getvalue().strip(), f"md2pdf {resolve_version()}")
+
+    @unittest.skipUnless(shutil.which("pandoc"), "pandoc is required")
+    def test_run_pandoc_embeds_image_relative_to_source_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_dir = Path(tmp)
+            config = parse_args(
+                [
+                    str(FIXTURE_DIR / "document.md"),
+                    "--output",
+                    str(temp_dir / "document.pdf"),
+                    "--build-dir",
+                    str(temp_dir / "build"),
+                    "--no-toc",
+                    "--no-qa",
+                ]
+            )
+
+            html_path = run_pandoc(config)
+            generated_html = html_path.read_text(encoding="utf-8")
+
+        self.assertIn('src="data:image/svg+xml', generated_html)
+        self.assertNotIn('src="assets/marker.svg"', generated_html)
 
 
 if __name__ == "__main__":
