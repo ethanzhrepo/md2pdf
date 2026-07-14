@@ -17,8 +17,8 @@ class Md2pdf < Formula
 
   desc "Convert Markdown to a styled, Chinese-friendly A4 PDF"
   homepage "https://github.com/ethanzhrepo/md2pdf"
-  url "https://files.pythonhosted.org/packages/41/30/7d740821f65d40193a92242c0024172c73c14c60b65d29f634b791d1429d/md2pdf_tool-0.1.2.tar.gz"
-  sha256 "2307906974073195876e79f3207ef237c4bc015115c97858ae7de9a600f51847"
+  url "https://files.pythonhosted.org/packages/fd/c6/3d8043de561d2b884ca5a4ef73a788e9fbb6ae0d0e428733dc8afb35e470/md2pdf_tool-0.1.4.tar.gz"
+  sha256 "4dccfcdebe4221f5d45292c7cbf5eacdae308c3a9f78fc7e5e53bfa3b7c8d4fc"
   license "MIT"
 
   depends_on "pandoc"
