@@ -11,22 +11,22 @@ A Markdown-to-PDF tool tuned for Chinese / CJK documents:
 
 ## Install
 
-Two system dependencies must be installed first (pip cannot install them):
-
-- **pandoc** — `brew install pandoc` (macOS) / `apt install pandoc` (Debian/Ubuntu).
-- **A headless browser** — after installing the Python package, run `playwright install chromium` to download Playwright's bundled Chromium. On macOS an existing Google Chrome is reused automatically.
-
-Then install the tool. For end users:
-
 ```bash
-# Homebrew (personal tap)
+# Homebrew (personal tap) — pulls in pandoc automatically
 brew install ethanzhrepo/md2pdf/md2pdf
-playwright install chromium
 
-# or pipx
+# or pipx (install pandoc separately: brew install pandoc / apt install pandoc)
 pipx install md2pdf-tool
-playwright install chromium
 ```
+
+`md2pdf --version` confirms what you got.
+
+Two system dependencies cannot be installed by pip:
+
+- **pandoc** — required. The Homebrew formula depends on it; with pipx, install it yourself.
+- **A headless browser** — *usually already covered*. md2pdf launches an installed Google
+  Chrome if it can find one, and only falls back to Playwright's bundled Chromium. Run
+  `playwright install chromium` (a ~350 MB download) **only if** a run fails to launch a browser.
 
 From source / for development:
 
@@ -35,7 +35,6 @@ pipx install .          # install from the repo, gives a global `md2pdf` command
 # or an editable install:
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
-playwright install chromium
 ```
 
 ## Usage
@@ -52,6 +51,7 @@ There is also a `gen_pdf.sh` wrapper that reads the first level-1 Markdown headi
 
 ```bash
 ./gen_pdf.sh docs/requirements.md docs/requirements.pdf
+./gen_pdf.sh --cover-label "需求说明书" docs/requirements.md
 ./gen_pdf.sh --dry-run docs/requirements.md   # print the command without running it
 ```
 
