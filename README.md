@@ -62,9 +62,13 @@ md2pdf docs/requirements.md \
   --output docs/requirements.pdf \
   --title "项目需求说明" \
   --subtitle "Private-deployment authoring, publishing, and playback platform" \
+  --cover-label "需求说明书" \
   --date "2026-06-03" \
   --required-text "Final one-line goal"
 ```
+
+`--cover-label` prints a small badge above the cover title. It is omitted by
+default, so covers show only the title and date unless you ask for one.
 
 Without installing, you can also run it as a module from the repo root (requires `pip install -e .` or `PYTHONPATH=src`):
 

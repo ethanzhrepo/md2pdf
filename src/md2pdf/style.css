@@ -9,6 +9,9 @@
   --accent-soft: #e8f1fb;
   --panel: #f6f9fc;
   --panel-line: #d7e2ee;
+  /* Cover badge text, set by --cover-label. `none` suppresses the pseudo-element
+     entirely, so no empty pill is laid out when no label is given. */
+  --cover-label: none;
 }
 
 @page {
@@ -62,7 +65,7 @@ strong {
 }
 
 #title-block-header::before {
-  content: "需求说明书";
+  content: var(--cover-label);
   position: relative;
   z-index: 1;
   display: inline-block;

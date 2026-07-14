@@ -33,6 +33,7 @@ class BuildConfig:
     title: str
     subtitle: str
     date: str
+    cover_label: str
     css: Path
     build_dir: Path
     footer_title: str
@@ -54,6 +55,20 @@ def build_metadata(title: str, subtitle: str = "", date: str = "", lang: str = "
         lines.append(f"date: {date}")
     lines.extend([f"lang: {lang}", "---", ""])
     return "\n".join(lines)
+
+
+def css_string_literal(text: str) -> str:
+    """Quote text for use as a CSS string value (e.g. the `content` property)."""
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"')
+    # The literal is emitted inside an inline <style>, where "</style" would
+    # close the element early. CSS unicode escapes keep the text intact.
+    escaped = escaped.replace("<", "\\3c ")
+    escaped = escaped.replace("\n", "\\A ")
+    return f'"{escaped}"'
+
+
+def cover_label_style(label: str) -> str:
+    return f"<style>:root {{ --cover-label: {css_string_literal(label)}; }}</style>\n"
 
 
 def selected_qa_pages(page_count: int) -> list[int]:
@@ -81,6 +96,11 @@ def parse_args(argv: list[str] | None = None) -> BuildConfig:
     parser.add_argument("--output", type=Path, help="PDF output path. Defaults to SOURCE with .pdf suffix.")
     parser.add_argument("--title", help="Cover/title metadata. Defaults to the source filename stem.")
     parser.add_argument("--subtitle", default="", help="Optional subtitle shown on the cover.")
+    parser.add_argument(
+        "--cover-label",
+        default="",
+        help='Optional badge above the cover title, e.g. "需求说明书". Hidden when omitted.',
+    )
     parser.add_argument("--date", default=local_date.today().isoformat(), help="Cover date. Defaults to today.")
     parser.add_argument("--css", type=Path, default=DEFAULT_CSS, help="Print CSS file.")
     parser.add_argument("--build-dir", type=Path, help="Intermediate HTML, metadata, and QA output directory.")
@@ -114,6 +134,7 @@ def parse_args(argv: list[str] | None = None) -> BuildConfig:
         title=title,
         subtitle=args.subtitle,
         date=args.date,
+        cover_label=args.cover_label,
         css=args.css.resolve(),
         build_dir=build_dir,
         footer_title=args.footer_title or title,
@@ -154,6 +175,12 @@ def run_pandoc(config: BuildConfig) -> Path:
     ]
     if config.toc:
         command.extend(["--toc", "--toc-depth", str(config.toc_depth)])
+    if config.cover_label:
+        # style.css defaults --cover-label to `none`, which drops the badge; this
+        # overrides it only when the caller asked for one.
+        header = config.build_dir / "cover-label.html"
+        header.write_text(cover_label_style(config.cover_label), encoding="utf-8")
+        command.extend(["--include-in-header", str(header)])
 
     subprocess.run(command, check=True, cwd=config.source.parent)
     return html_path
